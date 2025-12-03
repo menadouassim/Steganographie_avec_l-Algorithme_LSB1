@@ -29,21 +29,38 @@ print(convert_to_binary("Hello"))
 """
 """
 
-#function to to turn each pixel value in a picture into even value
-def convert_image_values_to_even_numbers(image):
-    pixels = image.load()
+
+#function to convert each pixel value to even value using a passed function
+
+def convert_values_to_even(red_value, green_value, blue_value):
+    red_value = red_value if red_value % 2 == 0 else red_value - 1
+    green_value = green_value if green_value % 2 == 0 else green_value - 1
+    blue_value = blue_value if blue_value % 2 == 0 else blue_value - 1
+    return red_value, green_value, blue_value
+
+
+
+    
+#function to iterate over each pixel in an image and apply a function
+def process_image(image):
     width, height = image.size
     for y_position in range(height):
         for x_position in range(width):
-            red_value, green_value, blue_value = pixels[x_position, y_position]
+            red_value, green_value, blue_value = image.getpixel((x_position, y_position))
+            
+            #skip black pixels and also avoid unnecessary processing plus encodes on only colored pixels later on
+            if red_value==0 and green_value==0 and blue_value==0:
+                continue 
+            #skip white pixels
+            if red_value==255 and green_value==255 and blue_value==255:
+                continue
+            
+            #converts the pixel values
+            red_value, green_value, blue_value = convert_values_to_even(red_value, green_value, blue_value)
+            
+            #still deciding whether to update the image or not
+            #image.putpixel((x_position, y_position), (red_value, green_value, blue_value))
 
-            # Convert each color to an even value
-            red_value = red_value if red_value % 2 == 0 else red_value - 1
-            green_value = green_value if green_value % 2 == 0 else green_value - 1
-            blue_value = blue_value if blue_value % 2 == 0 else blue_value - 1
-            pixels[x_position, y_position] = (red_value, green_value, blue_value)
+            print(f"Pixel at ({x_position}, {y_position}): R={red_value}, G={green_value}, B={blue_value}")
 
-            modified_image=image.save("even_image.png")
-    return modified_image
-
-convert_image_values_to_even_numbers(test_image)
+process_image(test_image)
