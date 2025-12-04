@@ -18,7 +18,8 @@ print(get_pixel_value(test_image, 10, 30))
 """
 #function to convert string to binary
 def convert_to_binary(string):
-    binary_equivilant = ' '.join(format(ord(char), '08b') for char in string)
+    
+    binary_equivilant = ''.join(format(ord(char), '08b') for char in string)
     return binary_equivilant
 
 print(convert_to_binary("Hello"))
@@ -40,9 +41,24 @@ def convert_values_to_even(red_value, green_value, blue_value):
 
 
 
+def encode_pixel(red_value, green_value, blue_value, bits_stream):
+    try:
+        r=(red_value & ~1) | int(next(bits_stream))
+        g=(green_value & ~1) | int(next(bits_stream))
+        b=(blue_value& ~1) | int(next(bits_stream))
+    except StopIteration:
+        return red_value, green_value, blue_value
+    return r, g, b
     
 #function to iterate over each pixel in an image and apply a function
-def process_image(image):
+def process_image(image,encode=False):
+    if encode:
+        message=input("Enter a message to encode: ")
+        binary_message=convert_to_binary(message)
+        bits_stream=iter(binary_message)
+
+
+
     width, height = image.size
     for y_position in range(height):
         for x_position in range(width):
@@ -58,9 +74,25 @@ def process_image(image):
             #converts the pixel values
             red_value, green_value, blue_value = convert_values_to_even(red_value, green_value, blue_value)
             
+            if encode:
+                
+               
+                  
+                red_value, green_value, blue_value = encode_pixel(red_value, green_value, blue_value,bits_stream)
+
+                
             #still deciding whether to update the image or not
             #image.putpixel((x_position, y_position), (red_value, green_value, blue_value))
 
             print(f"Pixel at ({x_position}, {y_position}): R={red_value}, G={green_value}, B={blue_value}")
 
-process_image(test_image)
+process_image(test_image, encode=True)
+
+
+
+
+    
+    
+            # Example encoding logic (to be implemented)
+            # r, g, b = encode_bits_into_pixel(r, g, b, message_bits)
+            
